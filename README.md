@@ -2,4 +2,5 @@
 Leet code problems
 == === ==
 
-#### Order bushido 2
+#### Order of bushido 2
+ 
