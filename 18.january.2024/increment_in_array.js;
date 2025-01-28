@@ -1,0 +1,26 @@
+var plusOne = function(d) {
+    /**
+       d = d0 d1 d2 d3 ... d_D-1
+    */
+    let D = d.length;
+    let carry = 1;
+
+    for (let i=D-1; i>=0; i--) {
+        let res = d[i] + carry;
+        if ( !Math.floor(res/10) ) {
+            /* single digit result */
+            d[i] = res;
+            return d;
+        }
+        else {
+            /* double digit; get carry  */
+            carry = Math.floor( (res/10)%10 );
+            d[i] = res%10;
+            console.log(`d[i]=${d[i]}, carry=${carry}`);
+        }
+    }
+
+    d.unshift(carry);
+    return d;
+
+};
