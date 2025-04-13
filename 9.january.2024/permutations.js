@@ -15,7 +15,6 @@ var hash_permute = (a, n, store) => {
      * if n==1 => return a; permuting only a[0]
      */
     if (n==1) return store.push([...a]);
-
     for (var i=0; i<n; i++) {
         hash_permute( a,n-1, store );
         if (n%2==0) swap(a,i,n-1);
@@ -48,3 +47,8 @@ var permute = (x) =>  {
     hash_permute(x, x.length, saves);
     return saves;
 };
+
+let a = [1,2,3,4,5];
+let res = permute(a);
+for (p of res) console.log(p)
+console.log(res.length)
