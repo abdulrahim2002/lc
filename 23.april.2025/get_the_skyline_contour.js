@@ -145,8 +145,6 @@ var getSkyline = function(buildings) {
 
      } );
 
-     console.log(checkpoints);
-
     let res = [],
         prev_max = 0;
 
