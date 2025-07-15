@@ -1,36 +1,56 @@
-/* Doubly Linked List Node structure  */
-struct Node {
-        int val;
-        struct Node* next;
-        struct Node* prev;
+/********************************* PROTOTYPES ************************************/
+struct NodeInt {
+        int    val;
+        struct NodeInt* next;
+        struct NodeInt* prev;
 };
-/* create new Node  */
-struct Node* newNode(int, struct Node*, struct Node*);
+struct NodeInt* newNodeInt(int, struct NodeInt*, struct NodeInt*);
 
-/* Double Linked List structure  */
-struct List {
-        int size;
-        struct Node* start;
-        struct Node* end;
+struct ListInt {
+        size_t size;        
+        struct NodeInt* start;
+        struct NodeInt* end;
 };
-typedef struct List MyLinkedList;
+struct ListInt* newListInt    ();
+int             getListInt    (struct ListInt* list, int index);
+void            appendLeftListInt (struct ListInt* list, int val);
+void            appendListInt (struct ListInt* list, int val);
+int             popListInt    (struct ListInt* list);
+int             popLeftListInt(struct ListInt* list );
+void            insertListInt (struct ListInt* list, int index, int val);
+int             removeListInt (struct ListInt* list, int index);
+void            freeListInt   (struct ListInt* list);
+/********************************* PROTOTYPES ************************************/
+
+/******************************* DEFINE ALIASES **********************************/
+void (*pushListInt)  (struct ListInt*, int) = appendListInt;
+void (*unshift)      (struct ListInt*, int) = appendLeftListInt;
+/******************************* DEFINE ALIASES **********************************/
 
 
-struct List* myLinkedListCreate()
+/**************************** YOUR CODE STARTS  **********************************/
+//
+//
+//
+/*A*************************** YOUR CODE ENDS  **********************************/
+
+
+/******************************* IMPLEMENTATIONS **********************************/
+struct ListInt* newListInt()
 {
-        struct List* list = (struct List*) malloc( sizeof(struct List) );
-        list->start = newNode( INT_MIN, NULL, NULL );
-        list->end = newNode( INT_MAX, NULL, NULL );
+        struct ListInt* list = (struct ListInt*) malloc( sizeof(struct ListInt) );
+        list->start = newNodeInt( INT_MIN, NULL, NULL );
+        list->end =   newNodeInt( INT_MAX, NULL, NULL );
         list->start->next = list->end;
         list->end->prev = list->start;
         list->size = 0;
         return list;
 }
 
-int myLinkedListGet(struct List* list, int index)
+int getListInt(struct ListInt* list, int index)
 {
         if ( list->size < 0 || list->size <= index ) return -1;
-        struct Node* node = list->start->next;
+        struct NodeInt* node = list->start->next;
         while ( index ) {
             node = node->next;
             index--;
@@ -38,62 +58,63 @@ int myLinkedListGet(struct List* list, int index)
         return node->val;
 }
 
-void myLinkedListAddAtHead(struct List* list, int val)
+void appendLeftListInt(struct ListInt* list, int val)
 {
-        struct Node* cur_first = list->start->next;
-        struct Node* new_first = newNode( val, list->start, cur_first );
+        struct NodeInt* cur_first = list->start->next;
+        struct NodeInt* new_first = newNodeInt( val, list->start, cur_first );
         list->start->next = cur_first->prev = new_first;
         list->size++;
 }
 
-void myLinkedListAddAtTail(struct List* list, int val)
+void appendListInt(struct ListInt* list, int val)
 {
-        struct Node* cur_last = list->end->prev;
-        struct Node* new_last = newNode( val, cur_last, list->end );
+        struct NodeInt* cur_last = list->end->prev;
+        struct NodeInt* new_last = newNodeInt( val, cur_last, list->end );
         cur_last->next = list->end->prev = new_last;
         list->size++;
 }
 
-void myLinkedListAddAtIndex(struct List* list, int index, int val)
+void insertListInt(struct ListInt* list, int index, int val)
 {
         if ( index < 0 || list->size < index )  return;
-        if ( list->size == index ) return myLinkedListAddAtTail( list, val );
+        if ( list->size == index ) return appendListInt( list, val );
 
-        struct Node* after_node = list->start->next;
+        struct NodeInt* after_node = list->start->next;
         while ( index ) {
             after_node = after_node->next;
             index--;
         }
-
-        struct Node* before_node = after_node->prev;
-        struct Node* new_node = newNode( val, before_node, after_node );
+        struct NodeInt* before_node = after_node->prev;
+        struct NodeInt* new_node = newNodeInt( val, before_node, after_node );
         before_node->next = after_node->prev = new_node;
         list->size++;
 }
 
-void myLinkedListDeleteAtIndex(struct List* list, int index)
+int removeListInt(struct ListInt* list, int index)
 {
-        if ( index < 0 || list->size <= index ) return;
+        if ( index < 0 || list->size <= index ) return INT_MIN;
 
-        struct Node* delete_node = list->start->next;
+        struct NodeInt* delete_node = list->start->next;
         while ( index ) {
             delete_node = delete_node->next;
             index--;
         }
+        int ret_val = delete_node->val;
 
-        struct Node* before = delete_node->prev;
-        struct Node* after  = delete_node->next;
+        struct NodeInt* before = delete_node->prev;
+        struct NodeInt* after  = delete_node->next;
 
         before->next = after;
         after->prev = before;
         free(delete_node); delete_node = NULL;
         list->size--;
+        return ret_val;
 }
 
-void myLinkedListFree(struct List* list)
+void freeListInt(struct ListInt* list)
 {
-        struct Node* node = list->start;
-        struct Node* behind = NULL;
+        struct NodeInt* node = list->start;
+        struct NodeInt* behind = NULL;
 
         while ( node ) {
                 behind = node;
@@ -107,9 +128,35 @@ void myLinkedListFree(struct List* list)
         return;
 }
 
-struct Node* newNode(int val, struct Node* prev, struct Node* next)
+int popListInt( struct ListInt* list )
 {
-        struct Node* node = (struct Node*) malloc( sizeof(struct Node) );
-        *node = (struct Node) { .val=val, .next=next, .prev=prev };
+        if ( list->size == 0 ) return INT_MIN;
+        struct NodeInt* delete_node = list->end->prev;
+        int ret_val = delete_node->val;
+
+        struct NodeInt* before = delete_node->prev;
+        struct NodeInt* after  = delete_node->next;
+
+        before->next = after;
+        after->prev = before;
+        free(delete_node); delete_node = NULL;
+        list->size--;
+
+        return ret_val;
+}
+
+int popLeftListInt( struct ListInt* list )
+{
+        if ( list->size == 0 ) return INT_MIN;
+        int ret_val = list->start->next->val;
+        removeListInt(list, 0);
+        return ret_val;
+}
+
+struct NodeInt* newNodeInt(int val, struct NodeInt* prev, struct NodeInt* next)
+{
+        struct NodeInt* node = (struct NodeInt*) malloc( sizeof(struct NodeInt) );
+        *node = (struct NodeInt) { .val=val, .next=next, .prev=prev };
         return node;
 }
+/******************************* IMPLEMENTATIONS **********************************/
